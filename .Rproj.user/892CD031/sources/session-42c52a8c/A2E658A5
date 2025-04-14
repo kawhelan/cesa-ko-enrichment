@@ -1,0 +1,26 @@
+{
+    "id": "A2E658A5",
+    "path": "~/BIO439-BIg_Data/GitHub/CesA_KO_GO_Enrichment/scripts/CesA_KO_GO_Enrichment_final.R",
+    "project_path": "scripts/CesA_KO_GO_Enrichment_final.R",
+    "type": "r_source",
+    "hash": "2929822976",
+    "contents": "",
+    "dirty": false,
+    "created": 1744651335331.0,
+    "source_on_save": false,
+    "relative_order": 6,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "0,0",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1744657720,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1744657720769,
+    "read_only": false,
+    "read_only_alternatives": []
+}

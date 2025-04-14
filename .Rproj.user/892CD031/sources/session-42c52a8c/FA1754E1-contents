@@ -1,0 +1,31 @@
+# Join domain names
+pfam_named <- pfam_stats %>%
+  left_join(pfam_annotated %>% select(Pfam, Description) %>% distinct(), by = "Pfam")
+
+# Prepare and filter top 15 by fold enrichment
+top_domains <- pfam_named %>%
+  mutate(
+    Description = ifelse(is.na(Description), Pfam, str_trunc(Description, 40)),  # truncate long descriptions
+    label = paste(Pfam, "-", Description),
+    log_padj = -log10(padj)
+  ) %>%
+  filter(is.finite(fold_enrichment)) %>%
+  slice_max(order_by = fold_enrichment, n = 15) %>%
+  mutate(label = fct_reorder(label, fold_enrichment))
+
+# Plot
+ggplot(top_domains, aes(x = fold_enrichment, y = label)) +
+  geom_point(aes(size = deg_count, color = log_padj)) +
+  scale_color_gradient(low = "skyblue", high = "darkred", name = "-log₁₀(adj. p-value)") +
+  scale_size_continuous(name = "# DEGs") +
+  labs(
+    title = "Top 15 Enriched Pfam Domains in Differentially Expressed Genes",
+    x = "Fold Enrichment",
+    y = "Pfam Domain"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "right",
+    axis.text.y = element_text(size = 10)
+  )
+

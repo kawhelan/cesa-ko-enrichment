@@ -1,0 +1,60 @@
+
+library(tidyverse)
+
+# Load the DEGs
+deg_path <- "/mnt/homes4celsrs/kerrina.whelan/BIO439-BIg_Data/GitHub/CesA_KO_GO_Enrichment/data/Significant-DEGs_WT-vs-KO1.csv"
+degs <- read_csv(deg_path)
+
+# View the the data
+glimpse(degs)
+head(degs)
+
+# Load the annotation file
+anno <- read_tsv("/mnt/homes4celsrs/kerrina.whelan/BIO439-BIg_Data/GitHub/CesA_KO_GO_Enrichment/data/phytozome_annotation.txt")
+
+# View the columns
+glimpse(anno)
+
+# Join by GeneID (from degs) and locusName (from anno)
+deg_annotated <- degs %>%
+  left_join(anno, by = c("GeneID" = "locusName"))
+
+# Check result
+glimpse(deg_annotated)
+
+# Separate comma-separated Pfams into individual rows
+pfam_all <- deg_annotated %>%
+  filter(!is.na(Pfam)) %>%
+  separate_rows(Pfam, sep = ",") %>%
+  count(Pfam, sort = TRUE)
+
+head(pfam_all, 10)
+
+top_pfam <- pfam_all %>%
+  slice_max(n, n = 10)
+
+ggplot(top_pfam, aes(x = reorder(Pfam, n), y = n)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Top 10 Pfam Domains in All DEGs",
+       x = "Pfam Domain",
+       y = "Count") +
+  theme_minimal()
+
+# Read file line-by-line
+pfam_lines <- readLines("data/pfamA.txt")
+
+# Step 2: Extract only the Pfam ID (ACC) and description (DE) lines
+pfam_acc <- pfam_lines[grepl("^#=GF ACC", pfam_lines)]
+pfam_de  <- pfam_lines[grepl("^#=GF DE", pfam_lines)]
+
+# Step 3: Clean them up
+pfam_ids <- str_remove(pfam_acc, "^#=GF ACC\\s+")
+pfam_desc <- str_remove(pfam_de, "^#=GF DE\\s+")
+
+# Step 4: Combine into a tibble
+pfam_df <- tibble(Pfam = pfam_ids, Description = pfam_desc)
+
+# Peek at it
+head(pfam_df)
+
