@@ -1,0 +1,27 @@
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20240807)
+Annotation Version and Release Date:	GO Ontology database DOI:  10.5281/zenodo.14861039 Released 2025-02-06
+Analyzed List:	PANTHER_gene_list.txt (Physcomitrella patens)
+Reference List:	Physcomitrella patens (all genes in database)
+Test Type:	FISHER
+Correction:	FDR
+GO cellular component complete	Physcomitrella patens - REFLIST (31335)	PANTHER_gene_list.txt (301)	PANTHER_gene_list.txt (expected)	PANTHER_gene_list.txt (over/under)	PANTHER_gene_list.txt (fold Enrichment)	PANTHER_gene_list.txt (raw P-value)	PANTHER_gene_list.txt (FDR)
+glyoxysome (GO:0009514)	3	3	.03	+	 > 100	8.78E-07	3.75E-04
+apoplast (GO:0048046)	64	5	.61	+	8.13	3.80E-04	2.16E-02
+extracellular region (GO:0005576)	315	15	3.03	+	4.96	4.76E-07	4.07E-04
+plasma membrane (GO:0005886)	827	20	7.94	+	2.52	1.67E-04	1.19E-02
+cell periphery (GO:0071944)	931	22	8.94	+	2.46	1.10E-04	9.39E-03
+intracellular anatomical structure (GO:0005622)	9357	62	89.88	-	.69	3.00E-04	1.83E-02
+intracellular membrane-bounded organelle (GO:0043231)	6689	39	64.25	-	.61	2.22E-04	1.46E-02
+membrane-bounded organelle (GO:0043227)	6774	39	65.07	-	.60	1.36E-04	1.05E-02
+cytoplasm (GO:0005737)	6353	35	61.03	-	.57	9.20E-05	8.73E-03
+intracellular organelle (GO:0043229)	7656	40	73.54	-	.54	2.02E-06	4.32E-04
+organelle (GO:0043226)	7691	40	73.88	-	.54	1.52E-06	4.33E-04
+protein-containing complex (GO:0032991)	3276	10	31.47	-	.32	6.56E-06	1.12E-03
+intracellular membraneless organelle (GO:0043232)	1992	3	19.13	-	.16	7.50E-06	1.07E-03
+membraneless organelle (GO:0043228)	1992	3	19.13	-	.16	7.50E-06	9.15E-04
+organelle membrane (GO:0031090)	1480	1	14.22	-	.07	1.40E-05	1.49E-03

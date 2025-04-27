@@ -1,0 +1,24 @@
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20240807)
+Annotation Version and Release Date:	GO Ontology database DOI:  10.5281/zenodo.14861039 Released 2025-02-06
+Analyzed List:	PANTHER_gene_list.txt (Physcomitrella patens)
+Reference List:	Physcomitrella patens (all genes in database)
+Test Type:	FISHER
+Correction:	FDR
+GO molecular function complete	Physcomitrella patens - REFLIST (31335)	PANTHER_gene_list.txt (301)	PANTHER_gene_list.txt (expected)	PANTHER_gene_list.txt (over/under)	PANTHER_gene_list.txt (fold Enrichment)	PANTHER_gene_list.txt (raw P-value)	PANTHER_gene_list.txt (FDR)
+isocitrate lyase activity (GO:0004451)	2	2	.02	+	 > 100	9.20E-05	1.92E-02
+phenylalanine ammonia-lyase activity (GO:0045548)	13	5	.12	+	40.04	9.56E-08	2.39E-04
+water transmembrane transporter activity (GO:0005372)	17	5	.16	+	30.62	4.45E-07	5.58E-04
+water channel activity (GO:0015250)	17	5	.16	+	30.62	4.45E-07	3.72E-04
+ammonia-lyase activity (GO:0016841)	20	5	.19	+	26.03	1.09E-06	4.55E-04
+cellulose synthase (UDP-forming) activity (GO:0016760)	21	5	.20	+	24.79	1.42E-06	5.08E-04
+cellulose synthase activity (GO:0016759)	21	5	.20	+	24.79	1.42E-06	4.44E-04
+carbon-nitrogen lyase activity (GO:0016840)	37	5	.36	+	14.07	2.68E-05	6.71E-03
+UDP-glucosyltransferase activity (GO:0035251)	76	8	.73	+	10.96	7.07E-07	4.43E-04
+glucosyltransferase activity (GO:0046527)	108	9	1.04	+	8.68	1.05E-06	5.27E-04
+UDP-glycosyltransferase activity (GO:0008194)	145	8	1.39	+	5.74	8.44E-05	1.92E-02
+lyase activity (GO:0016829)	366	14	3.52	+	3.98	1.42E-05	3.96E-03

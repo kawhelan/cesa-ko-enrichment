@@ -1,0 +1,57 @@
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20240807)
+Annotation Version and Release Date:	GO Ontology database DOI:  10.5281/zenodo.14861039 Released 2025-02-06
+Analyzed List:	PANTHER_gene_list.txt (Physcomitrella patens)
+Reference List:	Physcomitrella patens (all genes in database)
+Test Type:	FISHER
+Correction:	FDR
+GO biological process complete	Physcomitrella patens - REFLIST (31335)	PANTHER_gene_list.txt (301)	PANTHER_gene_list.txt (expected)	PANTHER_gene_list.txt (over/under)	PANTHER_gene_list.txt (fold Enrichment)	PANTHER_gene_list.txt (raw P-value)	PANTHER_gene_list.txt (FDR)
+glyoxylate cycle (GO:0006097)	6	3	.06	+	52.05	1.72E-05	2.76E-03
+glyoxylate metabolic process (GO:0046487)	8	3	.08	+	39.04	4.74E-05	5.84E-03
+cinnamic acid metabolic process (GO:0009803)	17	5	.16	+	30.62	4.45E-07	5.48E-04
+cinnamic acid biosynthetic process (GO:0009800)	17	5	.16	+	30.62	4.45E-07	4.11E-04
+water transport (GO:0006833)	17	5	.16	+	30.62	4.45E-07	3.29E-04
+fluid transport (GO:0042044)	17	5	.16	+	30.62	4.45E-07	2.74E-04
+plant-type primary cell wall biogenesis (GO:0009833)	17	5	.16	+	30.62	4.45E-07	2.35E-04
+olefinic compound biosynthetic process (GO:0120255)	20	5	.19	+	26.03	1.09E-06	4.47E-04
+olefinic compound metabolic process (GO:0120254)	20	5	.19	+	26.03	1.09E-06	4.02E-04
+mitotic cytokinesis (GO:0000281)	20	5	.19	+	26.03	1.09E-06	3.66E-04
+cytoskeleton-dependent cytokinesis (GO:0061640)	21	5	.20	+	24.79	1.42E-06	4.03E-04
+polyketide biosynthetic process (GO:0030639)	21	5	.20	+	24.79	1.42E-06	3.74E-04
+L-phenylalanine catabolic process (GO:0006559)	21	5	.20	+	24.79	1.42E-06	3.49E-04
+polyketide metabolic process (GO:0030638)	22	5	.21	+	23.66	1.82E-06	4.21E-04
+phenylpropanoid biosynthetic process (GO:0009699)	31	6	.30	+	20.15	4.50E-07	2.08E-04
+L-phenylalanine metabolic process (GO:0006558)	26	5	.25	+	20.02	4.41E-06	8.57E-04
+cellulose biosynthetic process (GO:0030244)	27	5	.26	+	19.28	5.37E-06	9.92E-04
+erythrose 4-phosphate/phosphoenolpyruvate family amino acid catabolic process (GO:1902222)	29	5	.28	+	17.95	7.78E-06	1.37E-03
+secondary metabolite biosynthetic process (GO:0044550)	71	12	.68	+	17.59	3.83E-12	1.41E-08
+phenylpropanoid metabolic process (GO:0009698)	36	6	.35	+	17.35	1.14E-06	3.52E-04
+secondary metabolic process (GO:0019748)	78	12	.75	+	16.02	1.22E-11	2.26E-08
+cytokinesis (GO:0000910)	33	5	.32	+	15.77	1.51E-05	2.53E-03
+aromatic amino acid family catabolic process (GO:0009074)	34	5	.33	+	15.31	1.75E-05	2.70E-03
+cellular response to ethylene stimulus (GO:0071369)	36	5	.35	+	14.46	2.34E-05	3.45E-03
+ethylene-activated signaling pathway (GO:0009873)	36	5	.35	+	14.46	2.34E-05	3.32E-03
+beta-glucan biosynthetic process (GO:0051274)	41	5	.39	+	12.70	4.47E-05	5.69E-03
+benzene-containing compound metabolic process (GO:0042537)	42	5	.40	+	12.39	5.03E-05	5.99E-03
+response to ethylene (GO:0009723)	45	5	.43	+	11.57	7.06E-05	8.14E-03
+plant-type cell wall biogenesis (GO:0009832)	46	5	.44	+	11.32	7.85E-05	8.79E-03
+cellulose metabolic process (GO:0030243)	48	5	.46	+	10.84	9.66E-05	1.02E-02
+erythrose 4-phosphate/phosphoenolpyruvate family amino acid metabolic process (GO:1902221)	54	5	.52	+	9.64	1.70E-04	1.75E-02
+L-amino acid catabolic process (GO:0170035)	61	5	.59	+	8.53	3.03E-04	2.87E-02
+beta-glucan metabolic process (GO:0051273)	62	5	.60	+	8.40	3.27E-04	3.02E-02
+proteinogenic amino acid catabolic process (GO:0170040)	68	5	.65	+	7.65	5.03E-04	4.13E-02
+cell wall biogenesis (GO:0042546)	88	6	.85	+	7.10	2.09E-04	2.03E-02
+aromatic amino acid metabolic process (GO:0009072)	109	7	1.05	+	6.69	9.09E-05	9.87E-03
+cell wall organization or biogenesis (GO:0071554)	240	12	2.31	+	5.21	4.09E-06	8.38E-04
+cell wall organization (GO:0071555)	205	10	1.97	+	5.08	3.21E-05	4.39E-03
+external encapsulating structure organization (GO:0045229)	207	10	1.99	+	5.03	3.49E-05	4.60E-03
+hormone-mediated signaling pathway (GO:0009755)	181	8	1.74	+	4.60	3.85E-04	3.38E-02
+cellular response to hormone stimulus (GO:0032870)	183	8	1.76	+	4.55	4.14E-04	3.55E-02
+cellular response to endogenous stimulus (GO:0071495)	184	8	1.77	+	4.53	4.29E-04	3.60E-02
+carbohydrate biosynthetic process (GO:0016051)	223	9	2.14	+	4.20	3.29E-04	2.96E-02
+carbohydrate metabolic process (GO:0005975)	855	24	8.21	+	2.92	3.26E-06	7.08E-04
+gene expression (GO:0010467)	2150	6	20.65	-	.29	2.05E-04	2.04E-02
