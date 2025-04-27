@@ -1,4 +1,4 @@
-# CesA_KO__Enrichment
+# CESA_KO__Enrichment
 
 This project analyzes Pfam domain enrichment, Gene Ontology (GO) enrichment, and KEGG pathway analysis among differentially expressed genes (DEGs) in a CesA knockout line of Physcomitrium patens. The analysis integrates Pfam annotations, GO terms, and KEGG pathways to investigate the functional categories and biological pathways responding to CesA disruption.
 
