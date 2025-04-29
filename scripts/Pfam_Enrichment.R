@@ -1,0 +1,221 @@
+# Load required packages
+library(tidyverse)
+
+# Define file paths for DEGs, Phytozome annotations, and Pfam domain descriptions
+
+deg_path <- "data/Significant-DEGs_WT-vs-KO1.csv"
+anno_path <- "data/phytozome_annotation.txt"
+pfam_path <- "data/pfamA.txt"
+
+# Load data
+
+degs <- read_csv(deg_path)
+anno <- read_tsv(anno_path)
+
+# Join and preprocess data
+
+# Join the DEGs dataframe with the annotations dataframe by corresponding columns
+deg_annotated <- degs %>%
+  left_join(anno, by = c("GeneID" = "locusName"))
+
+# Pfam domain counts
+
+# Extract and count Pfam domains from the annotated DEGs
+
+pfam_all <- deg_annotated %>%
+  filter(!is.na(Pfam)) %>% # Keep only rows where Pfam column is not NA
+  separate_rows(Pfam, sep = ",") %>% # If multiple domains are in one row, split into separate rows
+  count(Pfam, sort = TRUE) # # Count the frequency of each domain and sort in descending order
+
+# Load Pfam descriptions
+pfam_df <- read_table(pfam_path, col_names = FALSE) %>%
+  select(X1, X2, X3:X10) %>% # Select columns for Pfam ID, short name, and description text
+  unite("Description", X3:X10, sep = " ", na.rm = TRUE) %>% # Combine description columns into one and remove NAs
+  rename(Pfam = X1, ShortName = X2) # Rename columns for clarity
+
+# Top 10 domain bar plot
+
+# Prepare top 10 annotated Pfam domains
+pfam_annotated <- pfam_all %>%
+  left_join(pfam_df, by = "Pfam") %>% # Add domain descriptions and short names by joining with Pfam descriptions
+  mutate(label = paste(Pfam, "-", str_remove(Description, "(anon|:|;).*"))) # Create a label that combines the Pfam ID and a cleaned-up description
+
+# Select the top 10 most frequent Pfam domains based on their counts
+top10 <- pfam_annotated %>% slice_max(n, n = 10)
+
+# Optional: add functional categories to the top 10 domains
+
+# Create a map linking Pfam IDs to functional categories
+pfam_function_map <- tribble(
+  ~Pfam,      ~Function,
+  "PF07714", "Kinase/Signaling",
+  "PF00069", "Kinase/Signaling",
+  "PF00005", "Transporter",
+  "PF00249", "Transcription Factor",
+  "PF00067", "Detox/Metabolism",
+  "PF00847", "Transcription Factor",
+  "PF00046", "Transcription Factor",
+  "PF07690", "Transporter",
+  "PF13855", "Defense/Signaling",
+  "PF08263", "Defense/Signaling"
+)
+
+# Annotate the top 10 Pfam domains with their functional categories
+top10_annotated <- top10 %>%
+  left_join(pfam_function_map, by = "Pfam")
+
+# Create the bar plot for the top 10 Pfam domains
+ggplot(top10_annotated, aes(x = reorder(label, n), y = n, fill = Function)) +
+  geom_col() +
+  geom_text(aes(label = n), hjust = -0.1, size = 3.5) + # Add count labels slightly outside the bars
+  coord_flip() + # Flip coordinates for horizontal bars
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) + # Add space above bars for labels
+  labs(x = "Pfam Domain", y = "Count") +
+  theme_minimal() +
+  theme(legend.position = "right",
+        legend.direction = "vertical",
+        legend.spacing.y = unit(0.5, "cm"))  # Adjust vertical space between items
+
+# Regulation heatmap
+
+# Add regulation info
+deg_annotated <- deg_annotated %>%
+  mutate(regulation = case_when(  # Create a new column based on log2FoldChange values
+    log2FoldChange > 0 ~ "Upregulated", # If log2FoldChange > 0 -> Upregulated
+    log2FoldChange < 0 ~ "Downregulated", # If log2FoldChange < 0 -> Downregulated
+    TRUE ~ "Unchanged" # Otherwise -> Unchanged
+  ))
+
+# Count Pfam domains by regulation category
+pfam_regulation_counts <- deg_annotated %>%
+  filter(!is.na(Pfam)) %>%
+  separate_rows(Pfam, sep = ",") %>%
+  count(Pfam, regulation) %>%
+  pivot_wider(names_from = regulation, values_from = n, values_fill = 0) # Reshape data to wide format with columns for Upregulated and Downregulated
+
+# Annotate Pfam domains with descriptions
+pfam_heatmap_data <- pfam_regulation_counts %>%
+  left_join(pfam_df %>% select(Pfam, Description), by = "Pfam") %>% # Add domain descriptions
+  mutate(label = paste(Pfam, "-", str_remove(Description, "(anon|:|;).*"))) # Create a label with Pfam ID and cleaned description
+
+# Reshape data for heatmap plotting 
+pfam_long <- pfam_heatmap_data %>% # Convert from wide to long format for plotting
+  pivot_longer(cols = c("Upregulated", "Downregulated"),
+               names_to = "Direction", values_to = "Count") # Add new columns for Direction (up or down) and counts
+
+# Select top 20 Pfam domains based on total counts
+top_pfam <- pfam_long %>%
+  group_by(label) %>%  # Group by domain label
+  summarise(total = sum(Count)) %>% # Sum counts across Up and Down categories
+  slice_max(total, n = 20)
+
+# Filter heatmap data for the top 20 Pfam domains
+pfam_heat <- pfam_long %>%
+  filter(label %in% top_pfam$label)
+
+# Create the regulation heatmap
+ggplot(pfam_heat, aes(x = Direction, y = reorder(label, Count), fill = Count)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(low = "lightblue", high = "goldenrod") + # Set a color gradient for the fill
+  labs(x = "Regulation", y = "Pfam Domain") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate x-axis labels for readability
+
+# Enrichment Analysis
+
+# Prepare Pfam pair tables for GeneID-Pfam domain pairs
+
+# For DEGs:
+deg_pfam_pairs <- deg_annotated %>%
+  select(GeneID, Pfam) %>% # Select gene IDs and their Pfam domains from annotated DEGs
+  filter(!is.na(Pfam)) %>%
+  separate_rows(Pfam, sep = ",") %>%
+  distinct(GeneID, Pfam) # Remove duplicates
+
+# For all genes from the annotation:
+background_pfam_pairs <- anno %>%
+  select(locusName, Pfam) %>%
+  filter(!is.na(Pfam)) %>%
+  separate_rows(Pfam, sep = ",") %>%
+  distinct(locusName, Pfam)
+
+# Count occurrences of each Pfam domain in DEGs and background
+pfam_deg_counts <- deg_pfam_pairs %>% count(Pfam, name = "deg_count") # Count how many DEGs are associated with each Pfam domain
+pfam_bg_counts <- background_pfam_pairs %>% count(Pfam, name = "bg_count") # Count how many background genes are associated with each Pfam domain
+
+
+# Perform Fisher test and p-value adjustment for enrichment
+pfam_stats <- pfam_bg_counts %>%
+  full_join(pfam_deg_counts, by = "Pfam") %>% # Combine DEG and background counts by Pfam domain
+  mutate(across(c(deg_count, bg_count), ~replace_na(., 0))) %>% # Replace NAs with 0 (for domains missing in DEGs or background)
+  filter(deg_count + bg_count > 0) %>% # Keep only domains that appear in at least one of the sets
+  mutate(
+    total_deg = n_distinct(deg_pfam_pairs$GeneID), # Total number of DEGs (used for Fisher test)
+    total_bg = n_distinct(background_pfam_pairs$locusName) # Total number of background genes
+  ) %>%
+  rowwise() %>%
+  mutate(
+    other_deg = total_deg - deg_count,  # DEGs without this Pfam domain
+    other_bg = total_bg - bg_count, # Background genes without this Pfam domain
+    pval = tryCatch( # Run Fisher's exact test (2x2 contingency table)
+      fisher.test(matrix(c(deg_count, bg_count, other_deg, other_bg), nrow = 2))$p.value,
+      error = function(e) NA_real_  # If there's an error (e.g., no variation), return NA
+    )
+  ) %>%
+  ungroup() %>%  # Stop rowwise processing
+  mutate(
+    padj = p.adjust(pval, method = "fdr"), # Adjust p-values using FDR
+    fold_enrichment = (deg_count / total_deg) / (bg_count / total_bg) # Calculate fold enrichment for each domain
+  ) %>%
+  arrange(padj)  # Sort Pfam domains by adjusted p-value (smallest first)
+
+# Enrichment dot plot
+
+top_domains <- pfam_stats %>%
+  slice_min(padj, n = 15) %>% # Select the top 15 Pfam domains with the smallest adjusted p-values (most significant)
+  left_join(pfam_annotated %>% select(Pfam, Description) %>% distinct(), by = "Pfam") %>% # Join with the Pfam descriptions for labeling and keep unique Pfam-Description pairs
+  mutate(
+    Description = str_replace_na(Description, "Unknown"),  # Replace NA descriptions with Unknown
+    Description = str_remove(Description, "^.*?;"), # Clean up descriptions by removing unnecessary words/characters
+    Description = str_remove(Description, "anon.*"),
+    Description = str_remove(Description, ":.*"),
+    Description = str_trim(Description), # Trim whitespace from cleaned descriptions
+    label = paste(Pfam, "-", Description), # Create a combined label with Pfam ID and cleaned description
+    label = fct_reorder(label, fold_enrichment), # Reorder labels based on fold enrichment for better plotting order
+    log_padj = -log10(padj) # Calculate -log10 of the adjusted p-value (used for coloring)
+  )
+
+ggplot(top_domains, aes(x = fold_enrichment, y = label)) +
+  geom_point(aes(size = deg_count, color = log_padj)) + # Dot size = number of DEGs, dot color = -log10(adjusted p-value)
+  scale_color_gradient(low = "steelblue", high = "firebrick") + # Color gradient for significance (blue = less, red = more significant)
+  labs(x = "Fold Enrichment", y = "Pfam Domain", size = "# DEGs",
+       color = "-log10(FDR-adjusted p-value)") +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 9))
+
+# Filter for significant domains (FDR < 0.05)
+sig_domains <- pfam_stats %>%
+  filter(padj < 0.05) %>% # Keep only Pfam domains with adjusted p-value (FDR) < 0.05 (significant enrichment)
+  left_join(pfam_annotated %>% select(Pfam, Description) %>% distinct(), by = "Pfam") %>%
+  mutate(  # Clean up domain descriptions for labels
+    Description = str_replace_na(Description, "Unknown"),
+    Description = str_remove(Description, "^.*?;"),
+    Description = str_remove(Description, "anon.*"),
+    Description = str_remove(Description, ":.*"),
+    Description = str_trim(Description),
+    label = paste(Pfam, "-", Description)
+  )
+
+ggplot(sig_domains, aes(x = fold_enrichment, y = label)) +
+  geom_segment(aes(x = 0, xend = fold_enrichment, y = label, yend = label), color = "grey70") +   # Draw sticks
+  geom_point(aes(color = -log10(padj)), size = 5) +  # Add points at the fold enrichment values
+  scale_color_gradient2(low = "steelblue", high = "firebrick") + # Dot
+  scale_x_continuous(expand = expansion(mult = c(0, 0.2))) +  # Add extra space on the right for cleaner look
+  labs(
+    x = "Fold Enrichment",
+    y = "Pfam Domain",
+    color = "-log10(FDR-adjusted p-value)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 12, color = "black"))
+
