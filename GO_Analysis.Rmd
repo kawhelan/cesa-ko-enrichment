@@ -1,0 +1,179 @@
+---
+title: "GO Enrichment Analysis of CESA Knockout DEGs"
+author: "Kerrina Whelan"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+# Load required packages
+library(tidyverse)
+library(patchwork)  # For layout
+library(RColorBrewer)
+library(viridis)  # Optional for plotting
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This report summarizes Gene Ontology (GO) enrichment analysis results for biological processes (BP), molecular functions (MF), and cellular components (CC) using PANTHER data. The analysis includes barplots and pie charts to visualize significant GO terms. The GO enrichment was performed on differentially expressed genes (DEGs) identified from RNA-seq data in a CESA knockout mutant of *Physcomitrium patens*.
+
+---
+
+```{r load-data, include=FALSE}
+
+# Load data
+
+# Read in the PANTHER analysis tables
+bp <- read.delim("data/PANTHER_bp_analysis_table.txt", skip = 11, header = TRUE, sep = "\t")
+mf <- read.delim("data/PANTHER_mf_analysis_table.txt", skip = 11, header = TRUE, sep = "\t")
+cc <- read.delim("data/PANTHER_cc_analysis_table.txt", skip = 11, header = TRUE, sep = "\t")
+
+```
+
+
+```{r data-cleaning, include=FALSE}
+
+# Data cleaning
+
+# Define cleaning function
+clean_panther <- function(df) {
+  colnames(df)[1:8] <- c("GO_term", "REF_count", "DEG_count", "Expected", "OverUnder", "Fold_Enrichment", "P_value", "FDR")  # Rename columns for clarity
+  df <- df %>% filter(!is.na(FDR) & FDR < 0.05) # Keep only significant terms (FDR < 0.05) and remove NAs
+  # Make sure columns are numeric
+  df$Fold_Enrichment <- as.numeric(df$Fold_Enrichment)  
+  df$FDR <- as.numeric(df$FDR)
+  return(df)
+}
+
+# Apply cleaning
+bp <- clean_panther(bp)
+mf <- clean_panther(mf)
+cc <- clean_panther(cc)
+
+# Remove GO IDs from labels
+clean_labels <- function(term) {
+  sub(" \\(GO:\\d+\\)", "", term)
+}
+
+bp$GO_term <- clean_labels(bp$GO_term)
+mf$GO_term <- clean_labels(mf$GO_term)
+cc$GO_term <- clean_labels(cc$GO_term)
+
+```
+
+### GO Bar Plot (Top 15 Biological Processes)
+A bar plot of the top 15 enriched biological processes was created based on fold enrichment values. This exploratory figure provided an initial functional classification of CESA knockout DEGs, showing that metabolic and cell wall-related processes were highly represented, and guiding deeper statistical analysis of biological processes.
+
+
+
+```{r top15-barplot, echo=FALSE, fig.cap="**Figure 1.** Secondary metabolism, transport, and cell wall biogenesis processes are enriched in CESA knockout DEGs. GO enrichment analysis was performed on DEGs from *P. patens* CESA knockout lines (n = 3 biological replicates) using the PANTHER classification system. Fold enrichment and FDR-adjusted p-values were calculated for biological process (BP) terms. Only terms with FDR < 0.05 were retained, and the top 15 enriched BP terms were plotted. Bars represent fold enrichment for each GO term, with color intensity indicating enrichment magnitude.Enriched biological processes include secondary metabolism, cytoskeleton-dependent cytokinesis, water transport, and cell wall biogenesis, suggesting that CESA disruption activates metabolic, transport, and structural remodeling pathways."}
+
+# Top 15 bar plot
+
+# Sort BP GO terms by ascending FDR (most significant first) and select the top 15 most significant
+bp_top <- bp %>% arrange(FDR) %>% slice(1:15)
+
+plot_bp <- ggplot(bp_top, aes(x = reorder(GO_term, -Fold_Enrichment), y = Fold_Enrichment, fill = Fold_Enrichment)) +  # Reorder GO terms by Fold Enrichment (descending order)
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  scale_fill_viridis(option = "C", direction = -1) + # Apply the Viridis color scale (option "C", reversed direction)
+  theme_minimal(base_size = 12) +
+  labs(title = "A) GO classification", x = NULL, y = "Fold Enrichment") +
+  theme(legend.position = "none",
+  axis.text.y = element_text(size = 14, color = "black"))  # Adjust size as needed
+
+plot_bp
+
+
+```
+
+
+---
+
+### GO Pie Charts (BP, MF, CC)
+Pie charts were generated to summarize the distribution of GO terms across biological process, molecular function, and cellular component categories. By focusing on the top seven terms in each category, these figures provided an overview of the types of activities and cellular locations affected by CESA knockout, giving broad context to DEG functions.
+
+
+```{r GO-piecharts, echo=FALSE, fig.width=12, fig.height=18, fig.cap="**Figure 2.** CESA knockout DEGs are associated with intracellular organelles, glycosyltransferase activity, and secondary metabolic processes. GO enrichment analysis was performed on DEGs from *P. patens* CESA knockout lines (n = 3 biological replicates) using the PANTHER classification system. Significant GO terms (FDR < 0.05) were grouped into cellular component (CC), molecular function (MF), and biological process (BP) categories. B) Cellular Component: DEGs were predominantly associated with intracellular organelles and membrane compartments.C) Molecular Function: Glycosyltransferase and water transport-related activities were highly represented. D) Biological Process: Secondary metabolic processes and cell wall organization were key enriched processes, suggesting metabolic and structural reprogramming in response to CESA loss."}
+
+# Gene Ontology pie charts
+
+# Define pie chart function
+make_pie <- function(df, title) {
+  df <- df %>%
+    mutate(Label = clean_labels(GO_term),
+           Count = as.numeric(DEG_count)) %>%
+    arrange(desc(Count)) # Sort GO terms by DEG count in descending order
+  # Set number of top GO terms to show in the pie chart and select the top seven terms
+  top_n <- 7 
+  df_top <- df[1:top_n, ]
+  other_count <- sum(df$Count) - sum(df_top$Count) # Add 'Others' slice
+  
+  df_pie <- rbind(
+    df_top[, c("Label", "Count")],
+    data.frame(Label = "Others", Count = other_count)
+  )
+  # Calculate percentage for each slice
+  df_pie <- df_pie %>%
+    mutate(Percent = Count / sum(Count) * 100)
+  
+  ggplot(df_pie, aes(x = "", y = Percent, fill = Label)) +
+    geom_bar(stat = "identity", width = 1, color = "white") + # Draw bars with white borders between
+    coord_polar("y") + # Convert bar chart to pie chart
+    scale_fill_brewer(palette = "Set3") +
+    theme_void(base_size = 12) +
+    labs(title = title) +
+    theme(
+      legend.position = "right",
+      legend.title = element_text(size = 12),
+      legend.text = element_text(size = 12)
+    )
+}
+
+# Generate pie charts
+plot_cc <- make_pie(cc, "B) Cellular Component")
+plot_mf <- make_pie(mf, "C) Molecular Function")
+plot_bp_pie <- make_pie(bp, "D) Biological Process")
+
+combined_pies <- plot_cc / plot_mf / plot_bp_pie  # Stack them vertically
+
+combined_pies
+
+```
+
+
+---
+
+###  GO Combined Bar Plot and Pie Charts
+For clarity and conciseness, the GO bar plot and pie charts were merged into a single figure summarizing DEG functions. This gives a cohesive view of the types of biological activities, molecular roles, and cellular structures affected by CESA disruption and provides classification context for interpreting statistical enrichment results presented in the GO and KEGG analysis.
+
+
+```{r combine-plot, echo=FALSE, fig.width=14, fig.height=8, fig.cap="**Figure 3**. CESA knockout DEGs are enriched in secondary metabolism, transport, and cell wall biogenesis processes and localize to intracellular organelles.GO enrichment analysis was performed on DEGs from *P. patens* CESA knockout lines (n = 3 biological replicates) using the PANTHER classification system. A) The bar plot displays the top 15 enriched biological processes (BP) based on fold enrichment, filtered for FDR < 0.05. B–D) Pie charts summarize the distribution of enriched cellular components (CC), molecular functions (MF), and biological processes (BP). A) Biological processes were enriched for secondary metabolism, cytoskeleton-dependent cytokinesis, water transport, and cell wall biogenesis. B) Cellular components were predominantly intracellular organelles and membrane-bound structures. C) Molecular functions included glycosyltransferase activity and water transport-related activities. D) Biological process distribution confirmed the dominance of secondary metabolic and cell wall-related processes, highlighting the metabolic and structural reprogramming triggered by CESA loss."}
+
+# Combine the bar plot and pie charts into one figure
+
+# Place the GO bar plot on the left and stack the three pie charts vertically on the right
+final_plot <- (plot_bp | (plot_cc / plot_mf / plot_bp_pie)) + 
+  plot_layout(widths = c(1.8, 1.8)) # Set relative widths for the bar plot and pie charts to balance spacing
+
+final_plot
+
+```
+
+
+---
+
+
+```{r save-output, include=FALSE}
+
+# Optional: save figures as png and pdf
+
+ggsave("GO_summary_figure.png", plot = final_plot, width = 12, height = 8, dpi = 300)
+ggsave("GO_summary_figure.pdf", plot = final_plot, width = 12, height = 8)
+
+
+```
+
