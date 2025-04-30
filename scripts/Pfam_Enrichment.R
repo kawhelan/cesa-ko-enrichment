@@ -1,27 +1,26 @@
 # Load required packages
-library(tidyverse)
+library(tidyverse)    # Includes readr for read_csv and read_tsv
+library(rprojroot)    # Ensures consistent paths regardless of where the .Rmd or .R file is run
+
+# Define input directory using project root
+input_dir <- file.path(find_rstudio_root_file(), "data")
 
 # Define file paths for DEGs, Phytozome annotations, and Pfam domain descriptions
-
-deg_path <- "data/Significant-DEGs_WT-vs-KO1.csv"
-anno_path <- "data/phytozome_annotation.txt"
-pfam_path <- "data/pfamA.txt"
+deg_path  <- file.path(input_dir, "Significant-DEGs_WT-vs-KO1.csv")
+anno_path <- file.path(input_dir, "phytozome_annotation.txt")
+pfam_path <- file.path(input_dir, "pfamA.txt")
 
 # Load data
-
 degs <- read_csv(deg_path)
 anno <- read_tsv(anno_path)
 
 # Join and preprocess data
-
 # Join the DEGs dataframe with the annotations dataframe by corresponding columns
 deg_annotated <- degs %>%
   left_join(anno, by = c("GeneID" = "locusName"))
 
 # Pfam domain counts
-
 # Extract and count Pfam domains from the annotated DEGs
-
 pfam_all <- deg_annotated %>%
   filter(!is.na(Pfam)) %>% # Keep only rows where Pfam column is not NA
   separate_rows(Pfam, sep = ",") %>% # If multiple domains are in one row, split into separate rows
@@ -34,7 +33,6 @@ pfam_df <- read_table(pfam_path, col_names = FALSE) %>%
   rename(Pfam = X1, ShortName = X2) # Rename columns for clarity
 
 # Top 10 domain bar plot
-
 # Prepare top 10 annotated Pfam domains
 pfam_annotated <- pfam_all %>%
   left_join(pfam_df, by = "Pfam") %>% # Add domain descriptions and short names by joining with Pfam descriptions
@@ -77,7 +75,6 @@ ggplot(top10_annotated, aes(x = reorder(label, n), y = n, fill = Function)) +
         legend.spacing.y = unit(0.5, "cm"))  # Adjust vertical space between items
 
 # Regulation heatmap
-
 # Add regulation info
 deg_annotated <- deg_annotated %>%
   mutate(regulation = case_when(  # Create a new column based on log2FoldChange values
@@ -122,9 +119,7 @@ ggplot(pfam_heat, aes(x = Direction, y = reorder(label, Count), fill = Count)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate x-axis labels for readability
 
 # Enrichment Analysis
-
 # Prepare Pfam pair tables for GeneID-Pfam domain pairs
-
 # For DEGs:
 deg_pfam_pairs <- deg_annotated %>%
   select(GeneID, Pfam) %>% # Select gene IDs and their Pfam domains from annotated DEGs
@@ -170,7 +165,6 @@ pfam_stats <- pfam_bg_counts %>%
   arrange(padj)  # Sort Pfam domains by adjusted p-value (smallest first)
 
 # Enrichment dot plot
-
 top_domains <- pfam_stats %>%
   slice_min(padj, n = 15) %>% # Select the top 15 Pfam domains with the smallest adjusted p-values (most significant)
   left_join(pfam_annotated %>% select(Pfam, Description) %>% distinct(), by = "Pfam") %>% # Join with the Pfam descriptions for labeling and keep unique Pfam-Description pairs

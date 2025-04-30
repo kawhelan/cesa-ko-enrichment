@@ -1,19 +1,27 @@
 # Load required packages
-library(tidyverse)
-library(patchwork)  # For layout
+library(tidyverse) # Core data manipulation and visualization (includes dplyr, ggplot2, readr, etc.)
+library(patchwork) # For combining multiple plots into a combined figure
 library(RColorBrewer)
-library(viridis)  # Optional for plotting
-
+library(viridis)  # Optional for color-blind-friendly plotting
+library(rprojroot)    # Ensures consistent paths regardless of where the .Rmd or .R file is run
 
 # Load data
+# Define input directory using project root
+input_dir <- file.path(find_rstudio_root_file(), "data")  # All input files should be stored in a 'data/' folder in the project root
 
 # Read in the PANTHER analysis tables
-bp <- read.delim("data/PANTHER_bp_analysis_table.txt", skip = 11, header = TRUE, sep = "\t")
-mf <- read.delim("data/PANTHER_mf_analysis_table.txt", skip = 11, header = TRUE, sep = "\t")
-cc <- read.delim("data/PANTHER_cc_analysis_table.txt", skip = 11, header = TRUE, sep = "\t")
+# These are output files from the PANTHER classification system, each containing enrichment results
+# for a different Gene Ontology category (BP = Biological Process, MF = Molecular Function, CC = Cellular Component)
+bp <- read.delim(file.path(input_dir, "PANTHER_bp_analysis_table.txt"), 
+                 skip = 11, header = TRUE, sep = "\t")
+
+mf <- read.delim(file.path(input_dir, "PANTHER_mf_analysis_table.txt"), 
+                 skip = 11, header = TRUE, sep = "\t")
+
+cc <- read.delim(file.path(input_dir, "PANTHER_cc_analysis_table.txt"), 
+                 skip = 11, header = TRUE, sep = "\t")
 
 # Data cleaning
-
 # Define cleaning function
 clean_panther <- function(df) {
   colnames(df)[1:8] <- c("GO_term", "REF_count", "DEG_count", "Expected", "OverUnder", "Fold_Enrichment", "P_value", "FDR") # Rename columns for clarity
@@ -39,7 +47,6 @@ mf$GO_term <- clean_labels(mf$GO_term)
 cc$GO_term <- clean_labels(cc$GO_term)
 
 # Top 15 bar plot
-
 # Sort BP GO terms by ascending FDR (most significant first) and select the top 15 most significant
 bp_top <- bp %>% arrange(FDR) %>% slice(1:15)
 
@@ -55,7 +62,6 @@ plot_bp <- ggplot(bp_top, aes(x = reorder(GO_term, -Fold_Enrichment), y = Fold_E
 plot_bp
 
 # Gene Ontology pie charts
-
 # Define pie chart function
 make_pie <- function(df, title) {
   df <- df %>%
@@ -98,7 +104,6 @@ combined_pies <- plot_cc / plot_mf / plot_bp_pie  # Stack them vertically
 combined_pies
 
 # Combine the bar plot and pie charts into one figure
-
 # Place the GO bar plot on the left and stack the three pie charts vertically on the right
 final_plot <- (plot_bp | (plot_cc / plot_mf / plot_bp_pie)) + 
   plot_layout(widths = c(1.8, 1.8)) # Set relative widths for the bar plot and pie charts to balance spacing
@@ -106,7 +111,6 @@ final_plot <- (plot_bp | (plot_cc / plot_mf / plot_bp_pie)) +
 final_plot
 
 # Optional: save figures as png and pdf
-
 ggsave("GO_summary_figure.png", plot = final_plot, width = 14, height = 12, dpi = 300)
 ggsave("GO_summary_figure.pdf", plot = final_plot, width = 10, height = 12)
 

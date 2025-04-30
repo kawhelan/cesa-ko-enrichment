@@ -8,9 +8,11 @@ output: html_document
 ```{r setup, include=FALSE}
 
 # Load required packages
+library(tidyverse) # Core data manipulation and visualization (includes dplyr, ggplot2, readr, etc.)
+library(rprojroot)    # Ensures consistent paths regardless of where the .Rmd or .R file is run
 
-library(tidyverse)
-
+# Set working directory to the project root (where data/ lives)
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -21,14 +23,22 @@ This report summarizes Gene Ontology (GO) enrichment and KEGG pathway analysis t
 ```{r load-data, include=FALSE}
 
 # Load data
+# Define Input Directory Based on Project Root
+input_dir <- file.path(find_rstudio_root_file(), "data")
 
-# Load GO PANTHER tables
-bp <- read.delim("data/PANTHER_bp_analysis_table.txt", skip = 11, header = TRUE, sep = "\t")
-mf <- read.delim("data/PANTHER_mf_analysis_table.txt", skip = 11, header = TRUE, sep = "\t")
-cc <- read.delim("data/PANTHER_cc_analysis_table.txt", skip = 11, header = TRUE, sep = "\t")
+# Load GO PANTHER Tables (skip first 11 lines as per PANTHER format)
+bp <- read.delim(file.path(input_dir, "PANTHER_bp_analysis_table.txt"), 
+                 skip = 11, header = TRUE, sep = "\t")
+
+mf <- read.delim(file.path(input_dir, "PANTHER_mf_analysis_table.txt"), 
+                 skip = 11, header = TRUE, sep = "\t")
+
+cc <- read.delim(file.path(input_dir, "PANTHER_cc_analysis_table.txt"), 
+                 skip = 11, header = TRUE, sep = "\t")
 
 # Load KEGG annotation chart (from DAVID)
-kegg <- read.delim("data/KEGG_functional_annotation_chart.txt", header = TRUE, sep = "\t", quote = "")
+kegg <- read.delim(file.path(input_dir, "KEGG_functional_annotation_chart.txt"), 
+                   header = TRUE, sep = "\t", quote = "")
 
 
 ```
@@ -37,7 +47,6 @@ kegg <- read.delim("data/KEGG_functional_annotation_chart.txt", header = TRUE, s
 ```{r clean-data, include=FALSE}
 
 # Clean data
-
 # Define PANTHER cleaning function
 clean_panther <- function(df) {
   colnames(df)[1:8] <- c("GO_term", "REF_count", "DEG_count", "Expected", "OverUnder",
@@ -84,7 +93,6 @@ A dot plot was created to visualize the top 30 biological processes enriched amo
 ```{r GO-dotplot, echo=FALSE, fig.width=10, fig.height=8, fig.cap="**Figure 1.** Secondary metabolism, cytokinesis, and cell wall organization processes are enriched in CesA knockout DEGs. GO enrichment analysis of biological processes (BP) was performed on DEGs from *P. patens* CESA knockout lines (n = 3 biological replicates) using the PANTHER classification system. The top 30 enriched GO terms were plotted based on gene ratio (DEG count/reference count). Statistical significance was assessed via FDR-adjusted p-values, and -log10(FDR) was used to color the dots. Enriched processes include secondary metabolic pathways, cytokinesis, ethylene signaling, and cell wall biogenesis, reflecting metabolic reprogramming and structural adaptation to CESA loss."}
 
 # GO enrichment dot plot
-
 # Sort GO terms by ascending FDR (most significant first) and select the top 30 based on FDR
 bp_top <- bp %>% arrange(FDR) %>% slice(1:30)
 
@@ -117,7 +125,6 @@ A KEGG dot plot was generated to display the top 30 enriched pathways based on g
 ```{r KEGG-dotplot, echo=FALSE, fig.width=10, fig.height=8, fig.cap="**Figure 2.** CESA knockout DEGs are enriched in secondary metabolite biosynthesis, phenylalanine metabolism, and cell wall-related pathways. KEGG pathway enrichment analysis was performed on DEGs from *P. patens* CESA knockout lines (n = 3 biological replicates) using DAVID functional annotation. Pathways with Benjamini-Hochberg adjusted p-values (FDR) < 0.05 were retained. The top 30 enriched pathways were plotted based on gene ratio (DEG count/reference population count). Enriched pathways included secondary metabolite biosynthesis, phenylpropanoid biosynthesis, polyketide biosynthesis, and cell wall biogenesis, alongside regulatory functions such as ethylene signaling and water transport."}
 
 # KEGG Pathway Enrichment Dot Plot
-
 # Sort KEGG pathways by ascending Benjamini-adjusted p-value and select the top 30 pathways
 kegg_top <- kegg_clean %>% arrange(Benjamini) %>% slice(1:30)
 

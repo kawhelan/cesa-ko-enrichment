@@ -6,10 +6,12 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-
 # Load required packages
-library(tidyverse)
+library(tidyverse)    # Includes readr for read_csv and read_tsv
+library(rprojroot)    # Ensures consistent paths regardless of where the .Rmd or .R file is run
 
+# Set working directory to the project root (where data/ lives)
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -21,14 +23,16 @@ This report summarizes protein domain enrichment analysis using Pfam annotations
 
 ```{r load-data, include=FALSE}
 
-# Define file paths for DEGs, Phytozome annotations, and Pfam domain descriptions
+# Define input directory using project root
+input_dir <- file.path(find_rstudio_root_file(), "data")
 
-deg_path <- "data/Significant-DEGs_WT-vs-KO1.csv"
-anno_path <- "data/phytozome_annotation.txt"
-pfam_path <- "data/pfamA.txt"
+
+# Define file paths for DEGs, Phytozome annotations, and Pfam domain descriptions
+deg_path  <- file.path(input_dir, "Significant-DEGs_WT-vs-KO1.csv")
+anno_path <- file.path(input_dir, "phytozome_annotation.txt")
+pfam_path <- file.path(input_dir, "pfamA.txt")
 
 # Load data
-
 degs <- read_csv(deg_path)
 anno <- read_tsv(anno_path)
 ```
@@ -37,7 +41,6 @@ anno <- read_tsv(anno_path)
 ```{r join-annotate, include=FALSE}
 
 # Join and preprocess data
-
 # Join the DEGs dataframe with the annotations dataframe by corresponding columns
 deg_annotated <- degs %>%
   left_join(anno, by = c("GeneID" = "locusName"))
@@ -47,9 +50,7 @@ deg_annotated <- degs %>%
 ```{r pfam-counts, include=FALSE}
 
 # Pfam domain counts
-
 # Extract and count Pfam domains from the annotated DEGs
-
 pfam_all <- deg_annotated %>%
   filter(!is.na(Pfam)) %>% # Keep only rows where Pfam column is not NA
   separate_rows(Pfam, sep = ",") %>% # If multiple domains are in one row, split into separate rows
@@ -70,7 +71,6 @@ A bar plot was generated to visualize the top 10 Pfam domains most frequently as
 ```{r top10-barplot, fig.width=9, fig.height=4, echo=FALSE, fig.cap="**Figure 1.** Kinase signaling, transporter, and transcription factor domains are highly represented in CESA knockout DEGs. Differentially expressed genes (DEGs) from *P. patens* CESA knockout lines (n = 3 biological replicates) were identified via RNA-seq and annotated with Pfam domains using Phytozome. The top 10 domain frequencies across all DEGs were calculated and grouped into functional categories. Kinase signaling, transporter, and transcription factor domains were the most frequently represented, suggesting broad reprogramming of signaling and regulatory pathways in response to CESA loss."}
 
 # Top 10 domain bar plot
-
 # Prepare top 10 annotated Pfam domains
 pfam_annotated <- pfam_all %>%
   left_join(pfam_df, by = "Pfam") %>% # Add domain descriptions and short names by joining with Pfam descriptions
@@ -80,7 +80,6 @@ pfam_annotated <- pfam_all %>%
 top10 <- pfam_annotated %>% slice_max(n, n = 10)
 
 # Optional: add functional categories to the top 10 domains
-
 # Create a map linking Pfam IDs to functional categories
 pfam_function_map <- tribble(
   ~Pfam,      ~Function,
@@ -125,7 +124,6 @@ A heatmap was created to compare Pfam domain frequencies between upregulated and
 ```{r heatmap, echo=FALSE, fig.cap="**Figure 2.** Kinase and transcription factor domains exhibit distinct regulation patterns in CESA knockout DEGs. Pfam domains were analyzed separately in upregulated and downregulated DEGs from CESA knockout RNA-seq data (n = 3 biological replicates). The top 20 most frequent domains were selected based on total counts across both categories. The heatmap shows that kinase domains are more frequently associated with upregulated DEGs, while transcription factor domains are more prevalent among downregulated DEGs, indicating differential domain-specific regulation."}
 
 # Regulation heatmap
-
 # Add regulation info
 deg_annotated <- deg_annotated %>%
   mutate(regulation = case_when(  # Create a new column based on log2FoldChange values
@@ -174,9 +172,7 @@ ggplot(pfam_heat, aes(x = Direction, y = reorder(label, Count), fill = Count)) +
 ```{r enrichment-analysis, include=FALSE}
 
 # Enrichment Analysis
-
 # Prepare Pfam pair tables for GeneID-Pfam domain pairs
-
 # For DEGs:
 deg_pfam_pairs <- deg_annotated %>%
   select(GeneID, Pfam) %>% # Select gene IDs and their Pfam domains from annotated DEGs
@@ -233,7 +229,6 @@ An exploratory dot plot displaying Pfam domains ranked by fold enrichment and -l
 ```{r enrichment-dotplot, echo=FALSE, fig.width=10, fig.height=6, fig.cap="**Figure 3.** Kinase signaling and defense-related domains show enrichment trends in CESA knockout DEGs relative to the background genome. Fisher’s exact test was used to compare the frequency of Pfam domains in CESA knockout DEGs (n = 3 biological replicates) against the full *P. patens* background gene set. Fold enrichment and FDR-adjusted p-values were calculated for all domains. The plot displays the top 15 enriched domains ranked by adjusted p-value, including both significant (FDR < 0.05) and borderline domains. Kinase signaling and defense-related domains rank among the top hits, suggesting potential activation of stress-response and signaling pathways following CESA disruption."}
 
 # Enrichment dot plot
-
 top_domains <- pfam_stats %>%
   slice_min(padj, n = 15) %>% # Select the top 15 Pfam domains with the smallest adjusted p-values (most significant)
   left_join(pfam_annotated %>% select(Pfam, Description) %>% distinct(), by = "Pfam") %>% # Join with the Pfam descriptions for labeling and keep unique Pfam-Description pairs
@@ -268,7 +263,6 @@ A lollipop plot was generated to highlight Pfam domains that were significantly 
 ```{r enrichment-lollipop, echo=FALSE, fig.width=10, fig.height=3, fig.cap="**Figure 4.** Secondary metabolism, photosynthesis, and stress-response domains are significantly enriched in CESA knockout DEGs. Pfam domains were assessed for enrichment in DEGs from *P. patens* CESA knockout lines (n = 3 biological replicates) relative to the genome background using Fisher’s exact test with false discovery rate (FDR) correction. Only domains with FDR < 0.05 are shown. Four Pfam domains were significantly enriched, including domains associated with secondary metabolism (chalcone/stilbene synthase), photosynthesis (ribulose bisphosphate carboxylase), and stress responses (cytochrome P450)."}
 
 # Significant enrichment lollipop
-
 # Filter for significant domains (FDR < 0.05)
 sig_domains <- pfam_stats %>%
   filter(padj < 0.05) %>% # Keep only Pfam domains with adjusted p-value (FDR) < 0.05 (significant enrichment)

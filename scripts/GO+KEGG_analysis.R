@@ -1,19 +1,27 @@
 # Load required packages
-
-library(tidyverse)
+library(tidyverse) # Core data manipulation and visualization (includes dplyr, ggplot2, readr, etc.)
+library(rprojroot)    # Ensures consistent paths regardless of where the .Rmd or .R file is run
 
 # Load data
+# Define Input Directory Based on Project Root
+input_dir <- file.path(find_rstudio_root_file(), "data")
 
-# Load GO PANTHER tables
-bp <- read.delim("data/PANTHER_bp_analysis_table.txt", skip = 11, header = TRUE, sep = "\t")
-mf <- read.delim("data/PANTHER_mf_analysis_table.txt", skip = 11, header = TRUE, sep = "\t")
-cc <- read.delim("data/PANTHER_cc_analysis_table.txt", skip = 11, header = TRUE, sep = "\t")
+# Load GO PANTHER Tables (skip first 11 lines as per PANTHER format)
+bp <- read.delim(file.path(input_dir, "PANTHER_bp_analysis_table.txt"), 
+                 skip = 11, header = TRUE, sep = "\t")
+
+mf <- read.delim(file.path(input_dir, "PANTHER_mf_analysis_table.txt"), 
+                 skip = 11, header = TRUE, sep = "\t")
+
+cc <- read.delim(file.path(input_dir, "PANTHER_cc_analysis_table.txt"), 
+                 skip = 11, header = TRUE, sep = "\t")
 
 # Load KEGG annotation chart (from DAVID)
-kegg <- read.delim("data/KEGG_functional_annotation_chart.txt", header = TRUE, sep = "\t", quote = "")
+kegg <- read.delim(file.path(input_dir, "KEGG_functional_annotation_chart.txt"), 
+                   header = TRUE, sep = "\t", quote = "")
+
 
 # Clean data
-
 # Define PANTHER cleaning function
 clean_panther <- function(df) {
   colnames(df)[1:8] <- c("GO_term", "REF_count", "DEG_count", "Expected", "OverUnder",
@@ -67,7 +75,6 @@ GO_dotplot <- ggplot(bp_top, aes(x = GeneRatio, y = reorder(GO_term, GeneRatio))
 GO_dotplot
 
 # KEGG Pathway Enrichment Dot Plot
-
 # Sort KEGG pathways by ascending Benjamini-adjusted p-value and select the top 30 pathways
 kegg_top <- kegg_clean %>% arrange(Benjamini) %>% slice(1:30)
 
