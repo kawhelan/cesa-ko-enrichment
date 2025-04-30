@@ -49,6 +49,10 @@ Enrichment analyses include:
 - GO enrichment dot plot
 - KEGG enrichment dot plot
 
+## Reports
+
+Rendered HTML versions of the analysis (Pfam, GO, and KEGG enrichment) and the final project report are available in "docs/". These files were generated from R Markdown and include all code, figures, and narrative explanations.
+
 
 ## Author
 
