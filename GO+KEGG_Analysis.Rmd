@@ -77,8 +77,7 @@ kegg_clean <- kegg %>%
 ```
 
 ### GO Dot Plot (Top 30 Biological Processes)
-A dot plot was created to visualize the top 30 biological processes enriched among CESA knockout DEGs, incorporating gene ratio, gene count, and -log10 FDR values. This figure directly addressed the research question by identifying statistically significant biological processes, such as secondary metabolism, ethylene signaling, and cell wall biogenesis, that were activated in response to CESA disruption.
-
+A dot plot was created to visualize the top 30 biological processes enriched among CESA knockout DEGs, incorporating gene ratio, gene count, and -log10 FDR values. This figure directly addressed the research question by identifying statistically significant biological processes activated in response to CESA disruption.
 
 
 
@@ -111,7 +110,7 @@ GO_dotplot
 ---
 
 ### KEGG Dot Plot (Top 30 Pathways)
-A KEGG dot plot was generated to display the top 30 enriched pathways based on gene ratio and FDR significance. This analysis connected differential gene expression to known metabolic and regulatory pathways, revealing activation of secondary metabolite biosynthesis, phenylpropanoid pathways, and cell wall reinforcement mechanisms. The KEGG dot plot identified enriched biological pathways associated with transcriptional adaptation following CESA loss.
+A KEGG dot plot was generated to display the top 30 enriched pathways based on gene ratio and FDR significance. This analysis connected differential gene expression to known metabolic and regulatory pathways and identified enriched biological pathways associated with transcriptional adaptation following CESA loss.
 
 
 

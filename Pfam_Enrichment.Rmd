@@ -63,7 +63,7 @@ pfam_df <- read_table(pfam_path, col_names = FALSE) %>%
 ```
 
 ### Pfam Bar Plot (Top 10 Domains) 
-A bar plot was generated to visualize the top 10 Pfam domains most frequently associated with CESA knockout DEGs. This exploratory figure provided a broad overview of which protein families were most commonly affected by CesA disruption, highlighting early trends toward kinase signaling, transporter activity, and transcription factor functions. 
+A bar plot was generated to visualize the top 10 Pfam domains most frequently associated with CESA knockout DEGs. This exploratory figure provided a broad overview of which protein families were most commonly affected by CESA disruption.
 
 
 
@@ -118,7 +118,7 @@ ggplot(top10_annotated, aes(x = reorder(label, n), y = n, fill = Function)) +
 ---
 
 ### Pfam Heatmap (Upregulated vs. Downregulated Domains)
-A heatmap was created to compare Pfam domain frequencies between upregulated and downregulated DEGs, giving insight into domain-specific regulation patterns. This analysis revealed that kinase domains tended to be upregulated, while transcription factor domains were often associated with downregulated genes. Although the heatmap supported the hypothesis of functional reprogramming, it serves as a descriptive tool rather than a statistically inferential result.
+A heatmap was created to compare Pfam domain frequencies between upregulated and downregulated DEGs, giving insight into domain-specific regulation patterns. It serves as a descriptive tool rather than a statistically inferential result.
 
 
 
@@ -227,7 +227,7 @@ pfam_stats <- pfam_bg_counts %>%
 ---
 
 ### Pfam Dot Plot (Top Domains by p-value)
-An exploratory dot plot displaying Pfam domains ranked by fold enrichment and -log10 FDR was used to explore domain enrichment trends. This visualization included both significant and borderline significant domains, providing a broader view of potential functional shifts and useful for assessing overall patterns. 
+An exploratory dot plot displaying Pfam domains ranked by fold enrichment and -log10 FDR was used to explore domain enrichment trends. This visualization included both significant and borderline significant domains, useful for providing a broader view of potential functional shifts and assessing overall patterns. 
 
 
 ```{r enrichment-dotplot, echo=FALSE, fig.width=10, fig.height=6, fig.cap="**Figure 3.** Kinase signaling and defense-related domains show enrichment trends in CESA knockout DEGs relative to the background genome. Fisher’s exact test was used to compare the frequency of Pfam domains in CESA knockout DEGs (n = 3 biological replicates) against the full *P. patens* background gene set. Fold enrichment and FDR-adjusted p-values were calculated for all domains. The plot displays the top 15 enriched domains ranked by adjusted p-value, including both significant (FDR < 0.05) and borderline domains. Kinase signaling and defense-related domains rank among the top hits, suggesting potential activation of stress-response and signaling pathways following CESA disruption."}
@@ -262,7 +262,7 @@ ggplot(top_domains, aes(x = fold_enrichment, y = label)) +
 ---
 
 ### Pfam Lollipop Plot (Significant Domains) 
-A lollipop plot was generated to highlight Pfam domains that were significantly enriched among CESA knockout DEGs (FDR < 0.05). This figure directly addressed the research question by identifying protein families involved in stress responses, secondary metabolism, and photosynthesis, showing specific functional categories activated in response to CESA loss.
+A lollipop plot was generated to highlight Pfam domains that were significantly enriched among CESA knockout DEGs. This figure directly addressed the research question by identifying protein families and functional categories involved in response to CESA loss.
 
 
 ```{r enrichment-lollipop, echo=FALSE, fig.width=10, fig.height=3, fig.cap="**Figure 4.** Secondary metabolism, photosynthesis, and stress-response domains are significantly enriched in CESA knockout DEGs. Pfam domains were assessed for enrichment in DEGs from *P. patens* CESA knockout lines (n = 3 biological replicates) relative to the genome background using Fisher’s exact test with false discovery rate (FDR) correction. Only domains with FDR < 0.05 are shown. Four Pfam domains were significantly enriched, including domains associated with secondary metabolism (chalcone/stilbene synthase), photosynthesis (ribulose bisphosphate carboxylase), and stress responses (cytochrome P450)."}
