@@ -21,11 +21,11 @@ Enrichment analyses include:
    - GO enrichment analysis: 'GO_Analysis.Rmd' or 'GO_Analysis.R'
    - GO enrichment and KEGG pathway analysis: 'GO+KEGG_Analysis.Rmd' or 'GO+KEGG_Analysis.R'
 3. Make sure the following packages are installed:
-   - 'tidyverse'
-   - 'patchwork'
-   - 'viridis'
+   - `tidyverse`
+   - `patchwork`
+   - `viridis`
    - `rprojroot` (required for setting relative paths when knitting `.Rmd` files)
-4. Run the script from the **project root folder** — it assumes files are in "data/".
+4. Run the script from the **project root folder** — it assumes files are in `data/`.
 
 ## Input Files
 
