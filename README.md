@@ -15,11 +15,11 @@ Enrichment analyses include:
 
 ## How to Run
 
-1. Open the R Markdown ('.Rmd') or R script ('R') file in RStudio.
+1. Open the R Markdown (`.Rmd`) or R script (`R`) file in RStudio.
 2. Available scripts:
-   - Pfam domain enrichment analysis: 'Pfam_Enrichment.Rmd' or 'Pfam_Enrichment.R'
-   - GO enrichment analysis: 'GO_Analysis.Rmd' or 'GO_Analysis.R'
-   - GO enrichment and KEGG pathway analysis: 'GO+KEGG_Analysis.Rmd' or 'GO+KEGG_Analysis.R'
+   - Pfam domain enrichment analysis: `Pfam_Enrichment.Rmd` or `Pfam_Enrichment.R`
+   - GO enrichment analysis: `GO_Analysis.Rmd` or `GO_Analysis.R`
+   - GO enrichment and KEGG pathway analysis: `GO+KEGG_Analysis.Rmd` or `GO+KEGG_Analysis.R`
 3. Make sure the following packages are installed:
    - `tidyverse`
    - `patchwork`
@@ -29,13 +29,13 @@ Enrichment analyses include:
 
 ## Input Files
 
-- 'Significant-DEGs_WT-vs-KO1.csv': Differential gene expression results
-- 'phytozome_annotation.txt': Annotation file with Pfam domains
-- "pfamA.txt": Pfam domain descriptions
-- 'PANTHER_bp_analysis_table.txt': GO enrichment (Biological Processes)
-- 'PANTHER_mf_analysis_table.txt': GO enrichment (Molecular Functions) 
-- 'PANTHER_cc_analysis_table.txt': GO enrichment (Cellular Components)
-- 'KEGG_functional_annotation_chart.txt': KEGG enrichment results from DAVID
+- `Significant-DEGs_WT-vs-KO1.csv`: Differential gene expression results
+- `phytozome_annotation.txt`: Annotation file with Pfam domains
+- `pfamA.txt`: Pfam domain descriptions
+- `PANTHER_bp_analysis_table.txt`: GO enrichment (Biological Processes)
+- `PANTHER_mf_analysis_table.txt`: GO enrichment (Molecular Functions) 
+- `PANTHER_cc_analysis_table.txt`: GO enrichment (Cellular Components)
+- `KEGG_functional_annotation_chart.txt`: KEGG enrichment results from DAVID
   
 
 ## Outputs
@@ -52,7 +52,7 @@ Enrichment analyses include:
 
 ## Reports
 
-Rendered HTML versions of the analysis (Pfam, GO, and KEGG enrichment) and the final project report are available in "docs/". These files were generated from R Markdown and include all code, figures, and narrative explanations.
+Rendered HTML versions of the analysis (Pfam, GO, and KEGG enrichment) and the final project report are available in `docs/`. These files were generated from R Markdown and include all code, figures, and narrative explanations.
 
 
 ## Author
