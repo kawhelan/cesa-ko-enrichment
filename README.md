@@ -8,29 +8,33 @@ What functional categories, protein domains, and biological pathways are enriche
 
 Enrichment analyses include:
 
-- Pfam domain enrichment using Fisher’s exact test.
-- GO enrichment analysis (Biological Process, Molecular Function, Cellular Component) via the PANTHER classification system.
-- KEGG pathway analysis using DAVID functional annotation.
+- **Pfam domain enrichment** using Fisher’s exact test.
+- **GO enrichment analysis** (Biological Process, Molecular Function, Cellular Component) via the PANTHER classification system.
+- **KEGG pathway analysis** using DAVID functional annotation.
 
 
 ## How to Run
 
-1. Open the Rmd or R script in RStudio
-   - For Pfam domain enrichment analysis: Open "Pfam_Enrichment.Rmd" or "Pfam_Enrichment.R" in RStudio.
-   - For GO enrichment analysis: Open "GO_Analysis.Rmd" or "GO_Analysis.R" in RStudio.
-   - For GO enrichment and KEGG pathway analysis: Open "GO+KEGG_Analysis.Rmd" or "GO+KEGG_Analysis.R" in RStudio.
-2. Ensure you have the tidyverse, patchwork, and viridis packages installed.
-3. Run the script from the **project root folder** — it assumes files are in "data/".
+1. Open the R Markdown ('.Rmd') or R script ('R') file in RStudio.
+2. Available scripts:
+   - Pfam domain enrichment analysis: 'Pfam_Enrichment.Rmd' or 'Pfam_Enrichment.R'
+   - GO enrichment analysis: 'GO_Analysis.Rmd' or 'GO_Analysis.R'
+   - GO enrichment and KEGG pathway analysis: 'GO+KEGG_Analysis.Rmd' or 'GO+KEGG_Analysis.R'
+3. Make sure the following packages are installed:
+   - 'tidyverse'
+   - 'patchwork'
+   - 'viridis' 
+4. Run the script from the **project root folder** — it assumes files are in "data/".
 
 ## Input Files
 
-- "Significant-DEGs_WT-vs-KO1.csv": Differential gene expression results
-- "phytozome_annotation.txt": Annotation file with Pfam domains
+- 'Significant-DEGs_WT-vs-KO1.csv': Differential gene expression results
+- 'phytozome_annotation.txt': Annotation file with Pfam domains
 - "pfamA.txt": Pfam domain descriptions
-- "PANTHER_bp_analysis_table.txt": Output table from PANTHER GO enrichment analysis for Biological Process (BP) terms
-- "PANTHER_mf_analysis_table.txt": Output table from PANTHER GO enrichment analysis for Molecular Function (MF) terms
-- "PANTHER_cc_analysis_table.txt": Output table from PANTHER GO enrichment analysis for Cellular Component (CC) terms
-- "KEGG_functional_annotation_chart.txt": Output table from KEGG pathway enrichment analysis with enriched pathways among DEGs
+- 'PANTHER_bp_analysis_table.txt': GO enrichment (Biological Processes)
+- 'PANTHER_mf_analysis_table.txt': GO enrichment (Molecular Functions) 
+- 'PANTHER_cc_analysis_table.txt': GO enrichment (Cellular Components)
+- 'KEGG_functional_annotation_chart.txt': KEGG enrichment results from DAVID
   
 
 ## Outputs
@@ -48,11 +52,12 @@ Enrichment analyses include:
 
 ## Author
 
-Kerrina Whelan – final project for BIO 539 Big Data Analysis
+**Kerrina Whelan**
+Final project for BIO 539: Big Data Analysis
 
 ## Acknowledgments
 
-This project was completed as part of the final project requirements for BIO 539 Big Data Analysis.
+This project was completed as part of the final project requirements for BIO 539: Big Data Analysis.
 
 
 
