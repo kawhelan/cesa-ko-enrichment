@@ -23,7 +23,8 @@ Enrichment analyses include:
 3. Make sure the following packages are installed:
    - 'tidyverse'
    - 'patchwork'
-   - 'viridis' 
+   - 'viridis'
+   - `rprojroot` (required for setting relative paths when knitting `.Rmd` files)
 4. Run the script from the **project root folder** — it assumes files are in "data/".
 
 ## Input Files
@@ -48,6 +49,10 @@ Enrichment analyses include:
 - Combined bar plot and pie chart figure
 - GO enrichment dot plot
 - KEGG enrichment dot plot
+
+## Reports
+
+Rendered HTML versions of the analysis (Pfam, GO, and KEGG enrichment) and the final project report are available in "docs/". These files were generated from R Markdown and include all code, figures, and narrative explanations.
 
 
 ## Author
