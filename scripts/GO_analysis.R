@@ -107,6 +107,6 @@ final_plot
 
 # Optional: save figures as png and pdf
 
-ggsave("GO_summary_figure.png", plot = final_plot, width = 12, height = 8, dpi = 300)
-ggsave("GO_summary_figure.pdf", plot = final_plot, width = 12, height = 8)
+ggsave("GO_summary_figure.png", plot = final_plot, width = 14, height = 12, dpi = 300)
+ggsave("GO_summary_figure.pdf", plot = final_plot, width = 10, height = 12)
 
